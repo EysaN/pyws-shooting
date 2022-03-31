@@ -70,7 +70,7 @@ function initGame(websocket, canvas, ctx) {
 function receiveMoves(canvas, ctx, player, websocket) {
   websocket.addEventListener("message", ({ data }) => {
     const event = JSON.parse(data);
-    console.log('recieve', event);
+//    console.log('recieve', event);
 
     switch (event.type) {
       case "init":
@@ -137,8 +137,8 @@ function sendMoves(canvas, ctx, player1, player2, websocket) {
   }
   // When a key down, send a "play" event for both players.
   document.addEventListener("keydown",({}) => {
-    console.log('send', typeof(player1), player1);
-    console.log('send', typeof(player2), player2);
+//    console.log('send', typeof(player1), player1);
+//    console.log('send', typeof(player2), player2);
     if(player1) {
       document.addEventListener("keydown", player1.keydown);
       player1.intId = setInterval(reflectOnGame, 1000 / 60, canvas, ctx, player1, player2);
@@ -160,8 +160,8 @@ function sendMoves(canvas, ctx, player1, player2, websocket) {
   });
   // When a key up, send a "play" event for both players.
   document.addEventListener("keyup",({}) => {
-    console.log('send', typeof(player1), player1);
-    console.log('send', typeof(player2), player2);
+//    console.log('send', typeof(player1), player1);
+//    console.log('send', typeof(player2), player2);
     if(player1) {
       document.addEventListener("keyup", player1.keyup);
       player1.intId = setInterval(reflectOnGame, 1000 / 60, canvas, ctx, player1, player2);
@@ -205,13 +205,13 @@ function reflectOnGame(canvas, ctx, player1, player2) {
   if(player1){
     player1.bulletController.draw(ctx);
     player1.draw(ctx);
-    console.log('player1', player1.color, player1.intId)
+//    console.log('player1', player1.color, player1.intId)
     clearInterval(player1.intId);
   }
   if(player2){
     player2.bulletController.draw(ctx);
     player2.draw(ctx);
-    console.log('player2', player2.color, player2.intId)
+//    console.log('player2', player2.color, player2.intId)
     clearInterval(player2.intId);
   }
 }

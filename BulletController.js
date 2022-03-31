@@ -6,7 +6,7 @@ export default class BulletController {
     this.playerColor = playerColor;
     this.bullets = [];
     this.timerTillNextBullet = timerTillNextBullet;
-    console.log('bullets in',bullets);
+//    console.log('bullets in',bullets);
     if(bullets){
       for(let bullet of bullets){
         this.bullets.push(new Bullet(bullet.x, bullet.y, bullet.speed, bullet.damage));
@@ -25,7 +25,7 @@ export default class BulletController {
   }
 
   draw(ctx) {
-    console.log('bullets out', this.bullets);
+//    console.log('bullets out', this.bullets);
     if(this.bullets) {
       this.bullets.forEach((bullet) => {
         if (this.isBulletOffScreen(bullet)) {
