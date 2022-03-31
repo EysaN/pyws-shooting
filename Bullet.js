@@ -1,16 +1,16 @@
 export default class Bullet {
-    colors = [
-      "red",
-      "blue",
-      "red",
-      "green",
-      "yellow",
-      "orange",
-      "purple",
-      "pink",
-      "brown",
-      "grey",
-    ];
+    // colors = [
+    //   "red",
+    //   "blue",
+    //   "red",
+    //   "green",
+    //   "yellow",
+    //   "orange",
+    //   "purple",
+    //   "pink",
+    //   "brown",
+    //   "grey",
+    // ];
 
   constructor(x, y, speed, damage) {
     this.x = x;
@@ -20,13 +20,16 @@ export default class Bullet {
 
     this.width = 5;
     this.height = 15;
-    // this.color = "red";
-    this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+    this.color = "red";
+    //this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
   }
 
-  draw(ctx) {
+  draw(ctx, playerColor) {
     ctx.fillStyle = this.color;
-    this.y -= this.speed;
+    if(playerColor === 'yellow')
+      this.y -= this.speed;
+    else
+      this.y += this.speed;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 

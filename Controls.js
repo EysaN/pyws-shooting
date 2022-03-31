@@ -12,7 +12,7 @@ export class Controls {
     this.width = 50;
     this.height = 50;
     this.speed = 5;
-    this.startRate = this.color === 'lightgreen'? 1.3 : 6.3;
+    this.offset = this.color === 'lightgreen'? 6.3 : 1.3;
   }
 
   draw(ctx) {
@@ -40,7 +40,7 @@ export class Controls {
       const delay = 7;
       const damage = 1;
       const bulletX = this.x + this.width / 2;
-      const bulletY = this.y;
+      const bulletY = this.y + (this.color === 'lightgreen'? this.height : 0);
       this.bulletController.shoot(bulletX, bulletY, speed, damage, delay);
     }
   }
@@ -67,7 +67,7 @@ export class Controls {
     }
     else {
       this.x = WIDTH / 2.2;
-      this.y = HEIGHT / this.startRate;
+      this.y = HEIGHT / this.offset;
     }
   }
 

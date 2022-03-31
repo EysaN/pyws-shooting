@@ -1,11 +1,17 @@
 import Bullet from "./Bullet.js";
 
 export default class BulletController {
-  bullets = [];
-  timerTillNextBullet = 0;
 
-  constructor(canvas) {
-    this.canvas = canvas;
+  constructor(playerColor, bullets, timerTillNextBullet) {
+    this.playerColor = playerColor;
+    this.bullets = [];
+    this.timerTillNextBullet = timerTillNextBullet;
+    console.log('bullets in',bullets);
+    if(bullets){
+      for(let bullet of bullets){
+        this.bullets.push(new Bullet(bullet.x, bullet.y, bullet.speed, bullet.damage));
+      }
+    }
   }
 
   shoot(x, y, speed, damage, delay) {
@@ -19,13 +25,16 @@ export default class BulletController {
   }
 
   draw(ctx) {
-    this.bullets.forEach((bullet) => {
-      if (this.isBulletOffScreen(bullet)) {
-        const index = this.bullets.indexOf(bullet);
-        this.bullets.splice(index, 1);
-      }
-      bullet.draw(ctx);
-    });
+    console.log('bullets out', this.bullets);
+    if(this.bullets) {
+      this.bullets.forEach((bullet) => {
+        if (this.isBulletOffScreen(bullet)) {
+          const index = this.bullets.indexOf(bullet);
+          this.bullets.splice(index, 1);
+        }
+        bullet.draw(ctx, this.playerColor);
+      });
+    }
   }
 
   collideWith(sprite) {

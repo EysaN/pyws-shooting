@@ -13,17 +13,6 @@ window.addEventListener("DOMContentLoaded", () => {
   // get canvas context
   const ctx = canvas.getContext("2d");
 
-  // Initialize new bulletController
-  // const bulletController = new BulletController(canvas);
-  // Initialize new player
-  // const player = new Controls(
-  //     canvas.width / 2.2,
-  //     canvas.height / 1.3, // Position of first player
-  //     'yellow', // Color of first play
-  //     100,
-  //     bulletController
-  // );
-
   // Initilize the game
   let player = initGame(websocket, canvas, ctx);
   let player1 = player.color === 'yellow' ? player : null;
@@ -39,8 +28,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function initGame(websocket, canvas, ctx) {
   const params = new URLSearchParams(window.location.search);
+  // find who is the player
+  const color = params.has("join") ? 'lightgreen' : 'yellow';
+  const offset = params.has("join") ? 6.3 : 1.3;
   // Initialize new bulletController
-  const bulletController = new BulletController(canvas);
+  const bulletController = new BulletController(color, null, 0);
   websocket.addEventListener("open", () => {
     // Send an "init" event according to who is connecting.
     let event = { type: "init" };
@@ -55,32 +47,20 @@ function initGame(websocket, canvas, ctx) {
     } else {
       // First player starts a new game.
     }
-    event.player = params.has("join") ? new Controls(
+    event.player = new Controls(
         canvas.width / 2.2,
-        canvas.height / 6.3, // Position of first player
-        'lightgreen', // Color of first play
-        100,
-        bulletController
-    ) : new Controls(
-        canvas.width / 2.2,
-        canvas.height / 1.3,
-        'yellow',
+        canvas.height / offset, // Position of player
+        color, // Color of player
         100,
         bulletController
     );
     websocket.send(JSON.stringify(event));
   });
   // Initialize new player
-  return params.has("join") ? new Controls(
+  return new Controls(
       canvas.width / 2.2,
-      canvas.height / 6.3, // Position of first player
-      'lightgreen', // Color of first play
-      100,
-      bulletController
-  ) : new Controls(
-      canvas.width / 2.2,
-      canvas.height / 1.3,
-      'yellow',
+      canvas.height / offset, // Position of player
+      color, // Color of player
       100,
       bulletController
   );
@@ -92,19 +72,6 @@ function receiveMoves(canvas, ctx, player, websocket) {
     const event = JSON.parse(data);
     console.log('recieve', event);
 
-    // if (event.type !== 'init') {
-    //   // get player
-    //   const bulletController = new BulletController(canvas);
-    //   const playerData = event.player;
-    //   var player = new Controls(
-    //       playerData.x,
-    //       playerData.y,
-    //       playerData.color,
-    //       playerData.health,
-    //       bulletController
-    //   );
-    // }
-
     switch (event.type) {
       case "init":
         // Create links for inviting the second player and spectators.
@@ -114,35 +81,38 @@ function receiveMoves(canvas, ctx, player, websocket) {
       case "play":
         // get player
         if(player.color === 'yellow') {
-          const bulletController1 = new BulletController(canvas);
           if(event.player['lightgreen']) {
             const playerData = event.player['lightgreen'];
+            const bulletController = new BulletController('lightgreen',
+                playerData.bulletController.bullets,
+                playerData.bulletController.timerTillNextBullet);
             let player2 = new Controls(
                 playerData.x,
                 playerData.y,
                 playerData.color,
                 playerData.health,
-                bulletController1
+                bulletController
             );
             // Update the UI with the move.
             reflectOnGame(canvas, ctx, player, player2);
           }
         }else {
-          const bulletController2 = new BulletController(canvas);
           if(event.player['yellow']) {
             const playerData = event.player['yellow'];
+            const bulletController = new BulletController('yellow',
+                playerData.bulletController.bullets,
+                playerData.bulletController.timerTillNextBullet);
             let player1 = new Controls(
                 playerData.x,
                 playerData.y,
                 playerData.color,
                 playerData.health,
-                bulletController2
+                bulletController
             );
             // Update the UI with the move.
             reflectOnGame(canvas, ctx, player1, player);
           }
         }
-
         break;
       case "win":
         // showMessage(`Player ${player.color} wins!`);
@@ -165,8 +135,7 @@ function sendMoves(canvas, ctx, player1, player2, websocket) {
   if (params.has("watch")) {
     return;
   }
-
-  // When a key pressed, send a "play" event.
+  // When a key down, send a "play" event for both players.
   document.addEventListener("keydown",({}) => {
     console.log('send', typeof(player1), player1);
     console.log('send', typeof(player2), player2);
@@ -189,7 +158,7 @@ function sendMoves(canvas, ctx, player1, player2, websocket) {
       websocket.send(JSON.stringify(event));
     }
   });
-
+  // When a key up, send a "play" event for both players.
   document.addEventListener("keyup",({}) => {
     console.log('send', typeof(player1), player1);
     console.log('send', typeof(player2), player2);
@@ -214,12 +183,12 @@ function sendMoves(canvas, ctx, player1, player2, websocket) {
   });
 }
 
-
+// show warning message function.
 function showMessage(message) {
   window.setTimeout(() => window.alert(message), 50);
 }
 
-
+// find the url of the websocket to use.
 function getWebSocketServer() {
   if (window.location.host === "eysan.github.io") {
     return "wss://wsdemo-eysa.herokuapp.com/";
@@ -230,7 +199,7 @@ function getWebSocketServer() {
   }
 }
 
-
+// update UI.
 function reflectOnGame(canvas, ctx, player1, player2) {
   setCommonStyle(canvas, ctx);
   if(player1){
@@ -247,6 +216,7 @@ function reflectOnGame(canvas, ctx, player1, player2) {
   }
 }
 
+// Used in update UI.
 function setCommonStyle(canvas, ctx) {
   ctx.shadowColor = "#d53";
   ctx.shadowBlur = 20;

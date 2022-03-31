@@ -176,12 +176,12 @@ async def handler(websocket, path):
     assert event["type"] == "init"
     print(event)
     if event.get("player"):
-        PLAYERS[event["player"]["color"]] = event
+        PLAYERS[event["player"]["color"]] = event["player"]
 
     if "join" in event:
         # Second player joins an existing game.
         await join(websocket, event["join"])
-        PLAYERS[event["player"]["color"]] = event
+        PLAYERS[event["player"]["color"]] = event["player"]
     elif "watch" in event:
         # Spectator watches an existing game.
         await watch(websocket, event["watch"])
